@@ -1,17 +1,39 @@
-var rpc = require("discord-rpc");
-var bot = new rpc.Client({transport:"ipc"});
-var config = {
-	clientId:"your client id here",
-	clientSecret:"client secret too"
-}
-bot.on("ready",function(){
-	bot.setActivity({
-		details: "Editing yesterday's presentation \"footage\"",
-		state: "Design Studies 10",
-		largeImageKey: 'komachi',
-		largeImageText: 'I wasted time on this',
-		startTimestamp: new Date()
-	}).catch((reason)=>console.error(reason));
-})
+'use strict';
 
-bot.login().catch((reason)=>console.error(reason))
+try {
+  require('wtfnode').init();
+} catch (err) {}
+const { Client } = require('discord-rpc');
+const clientId = '479323753847848969';
+const rpcclient = new Client({ transport: 'ipc' });
+
+rpcclient.on('ready', () => {
+  rpcclient.subscribe('ACTIVITY_JOIN', ({ secret }) => {
+    console.log('Хочет присоедениться:', secret);
+  });
+  rpcclient.subscribe('ACTIVITY_SPECTATE', ({ secret }) => {
+    console.log('Хочет посмотреть вашу игру:', secret);
+  });
+  rpcclient.subscribe('ACTIVITY_JOIN_REQUEST', (user) => {
+    console.log('Пользователь хочет присоедениться:', user);
+  });
+
+  rpcclient.setActivity({
+    state: 'jail на SG',
+    details: '178.170.189.242:27016',
+    startTimestamp: new Date(),
+    largeImageKey: 'ae_large',
+    largeImageText: 'опа, а ты приемный!',
+    smallImageKey: 'ae',
+    smallImageText: 'лошок',
+    partyId: 'snek_party',
+    partySize: 99,
+    partyMax: 100,
+    matchSecret: 'slithers',
+    joinSecret: 'boop',
+    spectateSecret: 'sniff',
+    instance: true,
+  })
+});
+
+rpcclient.login({ clientId }).catch(console.error);
